@@ -13,23 +13,32 @@ stopwords = set([
     "haven", "isn", "ma", "mightn", "mustn", "needn", "needn", "hadn", "shouldn", "wasn", "weren", "won"
 ])
 
-def remover_stopwords(texto):
-    palabras = texto.lower().split()  # Convertir el texto a minúsculas y dividir por espacios
-    palabras_filtradas = [palabra for palabra in palabras if palabra not in stopwords]  # Filtrar las stopwords
-    palabras_removidas = [palabra for palabra in palabras if palabra in stopwords]  # Las stopwords eliminadas
-    return " ".join(palabras_filtradas), palabras_removidas  # Devolver las palabras filtradas y las eliminadas
+def remove_lines_with_stopwords(input_filename, output_filename):
+    stopwords_found = set()  # Usaremos un set para evitar duplicados de stopwords
 
-# Leer el archivo con la lista invertida
-archivo_entrada = 'texto_certamen.txt'  # Nombre de tu archivo
+    # Procesar el archivo de la lista invertida
+    with open(input_filename, 'r') as infile, open(output_filename, 'w') as outfile:
+        for line in infile:
+            # Dividir la línea en palabras (esto depende de la estructura del archivo)
+            words = line.split()  # Para cada línea, dividimos las palabras por espacios
+            
+            # Verificar si alguna palabra en la línea es una stopword
+            if any(word.lower() in stopwords for word in words):
+                stopwords_found.update(word.lower() for word in words if word.lower() in stopwords)
+                continue  # Omitir la línea completa si contiene una stopword
 
-# Procesar el archivo
-with open(archivo_entrada, 'r') as archivo:
-    for linea in archivo:
-        # Eliminar las stopwords de cada línea y obtener las stopwords eliminadas
-        linea_limpia, palabras_removidas = remover_stopwords(linea)
+            # Escribir la línea en el archivo de salida si no contiene stopwords
+            outfile.write(line)
 
-        # Mostrar las stopwords eliminadas
-        if palabras_removidas:
-            print(f'Stopwords eliminadas en la línea: {", ".join(palabras_removidas)}')
-        else:
-            print("no se elimino ninguna Stopwords en esta linea")
+    return stopwords_found
+
+# Usar las funciones para procesar el archivo
+input_filename = 'listainvertida.txt'  # Nombre del archivo con la lista invertida
+output_filename = 'lista_invertida_sin_stopwords.txt'  # Nombre del archivo de salida
+
+# Llamar a la función para eliminar las líneas con stopwords y mostrar las eliminadas
+stopwords_eliminadas = remove_lines_with_stopwords(input_filename, output_filename)
+
+# Mostrar las stopwords que fueron encontradas
+print("Stopwords eliminadas:")
+print(stopwords_eliminadas)
