@@ -1,0 +1,20 @@
+# Procesar cada palabra en la línea
+{
+    for (i = 1; i <= NF; i++) {
+        palabra = tolower($i)          # Convertir la palabra a minúsculas
+        gsub(/[^a-z0-9]/, "", palabra) # Eliminar caracteres no alfanuméricos
+        if (palabra != "") {
+            if (!(index(lista[palabra], NR) > 0)) { # Evitar duplicados
+                lista[palabra] = lista[palabra] NR ","
+            }
+        }
+    }
+}
+
+END {
+    # Imprimir la lista invertida
+    for (palabra in lista) {
+        sub(/,$/, "", lista[palabra]) # Eliminar la última coma
+        print palabra ": " lista[palabra]
+    }
+}
